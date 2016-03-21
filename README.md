@@ -1,5 +1,7 @@
 ## Build
 
+[![Join the chat at https://gitter.im/DavidFeng/skynet](https://badges.gitter.im/DavidFeng/skynet.svg)](https://gitter.im/DavidFeng/skynet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 For linux, install autoconf first for jemalloc
 
 ```
