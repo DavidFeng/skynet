@@ -20,20 +20,19 @@ static int prepend_timestamp(struct skynet_context * context, char buff[], size_
 		start_time = skynet_starttime();
 	}
 	static uint64_t last_now = (uint64_t) -1;
-  static int r = 0;
+	static int r = 0;
 	uint64_t now = skynet_now();
-  if (last_now == now) {
-    return r;
-  } else {
-    last_now = now;
-  }
+	if (last_now == now) {
+		return r;
+	}
+	last_now = now;
 	uint64_t tsp = now / 100 + start_time;
 	time_t t = (time_t) tsp;
 	struct tm tmr;
 	if (localtime_r(&t, &tmr) != NULL) {
 		int reslen = (int)strftime(buff, buffsize, "[%F %T", &tmr);
 		int n = snprintf(buff + reslen, buffsize - reslen, "-%02ld] ", now % 100);
-    r = reslen + n;
+		r = reslen + n;
 		return r;
 	} else {
 		return 0;
