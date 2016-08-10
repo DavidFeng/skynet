@@ -269,12 +269,11 @@ lredirect(lua_State *L) {
 	return 0;
 }
 
-#define SERVICE_NAME_FMT_SIZE 64
-static char service_name_fmt[SERVICE_NAME_FMT_SIZE];
 
 static int
 lerror(lua_State *L) {
 	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));
+	const char * service_name_fmt = lua_tostring(L, lua_upvalueindex(2));
 	int n = lua_gettop(L);
 	if (n <= 1) {
 		lua_settop(L, 1);
@@ -360,12 +359,6 @@ int
 luaopen_skynet_core(lua_State *L) {
 	luaL_checkversion(L);
 
-	lua_getglobal(L, "SERVICE_NAME");
-	const char * s = lua_tostring(L, -1);
-	snprintf(service_name_fmt, SERVICE_NAME_FMT_SIZE,
-			"<" K_GREEN "%s" KNRM "> %%s", s ? s : " ");
-	lua_pop(L, 1);
-
 	luaL_Reg l[] = {
 		{ "send" , lsend },
 		{ "genid", lgenid },
@@ -392,7 +385,12 @@ luaopen_skynet_core(lua_State *L) {
 		return luaL_error(L, "Init skynet context first");
 	}
 
-	luaL_setfuncs(L,l,1);
+	lua_getglobal(L, "SERVICE_NAME");
+	const char * s = lua_tostring(L, -1);
+	lua_pushfstring(L, "<" K_GREEN "%s" KNRM "> %%s", s ? s : " ");
+	lua_remove(L, -2);
+
+	luaL_setfuncs(L,l,2);
 
 	return 1;
 }
