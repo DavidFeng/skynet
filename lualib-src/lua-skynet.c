@@ -3,6 +3,9 @@
 
 #define KNRM  "\x1B[0m"
 #define KRED  "\x1B[31m"
+#define K_GREEN  "\x1B[32m"
+#define K_YELLOW "\x1B[33m"
+#define K_BLUE   "\x1B[34m"
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -266,14 +269,16 @@ lredirect(lua_State *L) {
 	return 0;
 }
 
+#define SERVICE_NAME_FMT_SIZE 64
+static char service_name_fmt[SERVICE_NAME_FMT_SIZE];
+
 static int
 lerror(lua_State *L) {
 	struct skynet_context * context = lua_touserdata(L, lua_upvalueindex(1));
 	int n = lua_gettop(L);
 	if (n <= 1) {
 		lua_settop(L, 1);
-		const char * s = luaL_tolstring(L, 1, NULL);
-		skynet_error(context, "%s", s);
+		skynet_error(context, service_name_fmt, luaL_tolstring(L, 1, NULL));
 		return 0;
 	}
 	luaL_Buffer b;
@@ -287,7 +292,7 @@ lerror(lua_State *L) {
 		}
 	}
 	luaL_pushresult(&b);
-	skynet_error(context, "%s", lua_tostring(L, -1));
+	skynet_error(context, service_name_fmt, lua_tostring(L, -1));
 	return 0;
 }
 
@@ -354,6 +359,12 @@ lnow(lua_State *L) {
 int
 luaopen_skynet_core(lua_State *L) {
 	luaL_checkversion(L);
+
+	lua_getglobal(L, "SERVICE_NAME");
+	const char * s = lua_tostring(L, -1);
+	snprintf(service_name_fmt, SERVICE_NAME_FMT_SIZE,
+			"<" K_GREEN "%s" KNRM "> %%s", s ? s : " ");
+	lua_pop(L, 1);
 
 	luaL_Reg l[] = {
 		{ "send" , lsend },
