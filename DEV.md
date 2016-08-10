@@ -1,6 +1,7 @@
 # dev版定制功能
 
-* skynet_error附带时间戳信息
+* skynet_error附带时间戳信息, skynet.error还附加了服务名
+* 修改了gate服务，不再要求fd一定有对应的connection
 
 
 # notes
